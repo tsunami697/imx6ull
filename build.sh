@@ -14,6 +14,7 @@ cross_complie_config()
 		# 配置局部交叉编译器
 		CROSS_COMPILE_DIR=$TOP_DIR/tools/
 		if [ ! -e $CROSS_COMPILE_DIR/$CROSS_COMPILE_PACKEGE_DIR ]; then
+			mkdir $CROSS_COMPILE_DIR
 			tar -xvf $CROSS_COMPILE_PACKEGE -C $CROSS_COMPILE_DIR
 		fi
 		CROSS_COMPILE_BIN_DIR=gcc-linaro-4.9.4-2017.01-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
@@ -47,15 +48,20 @@ cross_complie_config()
 # https://atk-imx6ull.coding.net/public
 clone_code()
 {
+	if [ ! -e package ]; then
+		mkdir package
+	fi
 	cd package
 
 	# 下载源代码
-	rm -rf 01_Source_Code
-	git clone https://e.coding.net/atk-imx6ull/imx6ull/01_Source_Code.git
+	if [ ! -e 01_Source_Code ]; then
+		git clone https://e.coding.net/atk-imx6ull/imx6ull/01_Source_Code.git
+	fi
 
 	# 下载工具
-	rm -rf 05_Tools
-	git clone https://e.coding.net/atk-imx6ull/imx6ull/05_Tools.git
+	if [ ! -e 05_Tools ]; then
+		git clone https://e.coding.net/atk-imx6ull/imx6ull/05_Tools.git
+	fi
 
 	cd -
 }
@@ -71,11 +77,13 @@ build_uboot()
 #编译内核
 build_kernel()
 {
-	echo "hello"
+	cd $TOP_DIR/uboot/alientek_kernel/
+	cd -
 }
 
 start()
 {
+	clone_code
 	cross_complie_config
 	build_uboot
 	bulld_kernel
