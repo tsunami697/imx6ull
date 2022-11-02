@@ -77,7 +77,8 @@ build_uboot()
 #编译内核
 build_kernel()
 {
-	cd $TOP_DIR/uboot/alientek_kernel/
+	cd $TOP_DIR/kernel/alientek_kernel/
+	./build_kernel_emmc.sh
 	cd -
 }
 
