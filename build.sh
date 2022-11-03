@@ -71,7 +71,6 @@ clone_code()
 # 编译uboot
 build_uboot()
 {
-	cd $TOP_DIR/uboot/alientek_uboot/
 	echo "=========================start building uboot========================="
 	cd $TOP_DIR/uboot/${VENDOR}_uboot/
 	./build_uboot_emmc.sh
@@ -82,7 +81,6 @@ build_uboot()
 #编译内核
 build_kernel()
 {
-	cd $TOP_DIR/kernel/alientek_kernel/
 	echo "=========================start building kernel========================="
 	cd $TOP_DIR/kernel/${VENDOR}_kernel/
 	./build_kernel_emmc.sh
@@ -110,17 +108,24 @@ build_rootfs()
 
 build_package()
 {
+	echo "=========================start building package========================="
 	if [ ! -d "${TOP_DIR}/output/" ]; then
 		mkdir $TOP_DIR/output/
 	else
-		rm $TOP_DIR/output/*
+		rm $TOP_DIR/output/firmware/* 
 	fi
 
-	cp $TOP_DIR/uboot/${VENDOR}_uboot/u-boot.imx $TOP_DIR/output/
-	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/
-	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage $TOP_DIR/output/
+	cp $TOP_DIR/uboot/${VENDOR}_uboot/u-boot.imx $TOP_DIR/output/firmware/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/firmware/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage $TOP_DIR/output/firmware/
 
-	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
+	tar -jcvf $TOP_DIR/output/firmware/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
+
+	cd $TOP_DIR/output/firmware/
+	mv u-boot.imx u-boot-imx6ull14x14evk_emmc.imx
+	mv imx6ull-alientek-emmc.dtb zImage-imx6ull-14x14-evk-emmc.dtb
+	mv rootfs-$VENDOR.tar.bz2 rootfs_nogpu.tar.bz2
+	cd -
 }
 
 start()
@@ -133,6 +138,7 @@ start()
 	build_rootfs
 
 	build_package
+	echo "=========================building done========================="
 }
 
 start
