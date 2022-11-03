@@ -99,7 +99,7 @@ build_rootfs()
 	mkdir rootfs-obj
 	cd $TOP_DIR/rootfs/busybox-1.29.0/
 	make defconfig
-	make
+	make -j12
 	make install CONFIG_PREFIX=$TOP_DIR/rootfs/rootfs-obj/
 	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 rootfs-obj
 	cd -
@@ -107,6 +107,9 @@ build_rootfs()
 
 build_package()
 {
+	if [ ! -d "$CROSS_COMPILE_DIR" ]; then
+		mkdir $TOP_DIR/output/
+	fi
 	rm $TOP_DIR/output/*.img
 	rm $TOP_DIR/output/*.dtb
 
