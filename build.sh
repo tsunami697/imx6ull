@@ -96,28 +96,31 @@ build_rootfs()
 {
 	cd $TOP_DIR/rootfs
 	rm rootfs-obj -rf
+
 	mkdir rootfs-obj
 	cd $TOP_DIR/rootfs/busybox-1.29.0/
 	make defconfig
 	make -j12
 	make install CONFIG_PREFIX=$TOP_DIR/rootfs/rootfs-obj/
-	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 rootfs-obj
+
+	rm $TOP_DIR/output/rootfs-$VENDOR.tar.bz2
+	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj
 	cd -
 }
 
 build_package()
 {
-	if [ ! -d "$CROSS_COMPILE_DIR" ]; then
+	if [ ! -d "${TOP_DIR}/output/" ]; then
 		mkdir $TOP_DIR/output/
+	else
+		rm $TOP_DIR/output/*
 	fi
-	rm $TOP_DIR/output/*.img
-	rm $TOP_DIR/output/*.dtb
 
-	cp $TOP_DIR/uboot/alientek_uboot/u-boot.imx $TOP_DIR/output/
+	cp $TOP_DIR/uboot/${VENDOR}_uboot/u-boot.imx $TOP_DIR/output/
 	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/
 	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage $TOP_DIR/output/
 
-	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 rootfs/rootfs-obj/
+	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
 }
 
 start()
