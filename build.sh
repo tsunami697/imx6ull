@@ -1,6 +1,7 @@
 #!/bin/sh
 
 TOP_DIR=$(pwd)
+VENDOR=alientek
 
 CROSS_COMPILE_GLOBAL_FLAG=
 
@@ -71,7 +72,10 @@ clone_code()
 build_uboot()
 {
 	cd $TOP_DIR/uboot/alientek_uboot/
+	echo "=========================start building uboot========================="
+	cd $TOP_DIR/uboot/${VENDOR}_uboot/
 	./build_uboot_emmc.sh
+	#cp u-boot.imx $TOP_DIR/output/
 	cd -
 }
 
@@ -79,10 +83,15 @@ build_uboot()
 build_kernel()
 {
 	cd $TOP_DIR/kernel/alientek_kernel/
+	echo "=========================start building kernel========================="
+	cd $TOP_DIR/kernel/${VENDOR}_kernel/
 	./build_kernel_emmc.sh
+	#cp arch/arm/boot/zImage $TOP_DIR/output/
+	#cp arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/
 	cd -
 }
 
+#编译rootfs
 build_rootfs()
 {
 	cd $TOP_DIR/rootfs
@@ -92,16 +101,32 @@ build_rootfs()
 	make defconfig
 	make
 	make install CONFIG_PREFIX=$TOP_DIR/rootfs/rootfs-obj/
+	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 rootfs-obj
 	cd -
+}
+
+build_package()
+{
+	rm $TOP_DIR/output/*.img
+	rm $TOP_DIR/output/*.dtb
+
+	cp $TOP_DIR/uboot/alientek_uboot/u-boot.imx $TOP_DIR/output/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage $TOP_DIR/output/
+
+	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 rootfs/rootfs-obj/
 }
 
 start()
 {
 	clone_code
 	cross_complie_config
+
 	build_uboot
 	build_kernel
 	build_rootfs
+
+	build_package
 }
 
 start

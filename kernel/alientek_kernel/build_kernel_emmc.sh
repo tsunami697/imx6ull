@@ -6,5 +6,5 @@
 
 make distclean
 make imx_v7_defconfig
-make menuconfig
+#make menuconfig
 make all -j16
