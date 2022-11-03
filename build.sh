@@ -121,11 +121,17 @@ build_package()
 
 	tar -jcvf $TOP_DIR/output/firmware/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
 
+	# 修改下载包名称
 	cd $TOP_DIR/output/firmware/
 	mv u-boot.imx u-boot-imx6ull14x14evk_emmc.imx
 	mv imx6ull-alientek-emmc.dtb zImage-imx6ull-14x14-evk-emmc.dtb
 	mv rootfs-$VENDOR.tar.bz2 rootfs_nogpu.tar.bz2
 	cd -
+	
+	# 安装打包
+	# tar -zxvf $TOP_DIR/package/05_Tools/03、NXP官方原版MFG_TOOL烧写工具/L4.1.15_2.0.0-ga_mfg-tools.tar.gz -C $TOP_DIR/output/
+	# cd $TOP_DIR/output/L4.1.15_2.0.0-ga_mfg-tools/ && tar -zxvf mfgtools-with-rootfs.tar.gz -C ./ && cd -
+
 }
 
 start()
