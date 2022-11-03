@@ -21,6 +21,7 @@ cross_complie_config()
 
 		ARCH=arm
 		CROSS_COMPILE=$CROSS_COMPILE_DIR$CROSS_COMPILE_BIN_DIR
+		export ARCH
 		export CROSS_COMPILE
 	else
 		# 配置局部交叉编译器
@@ -82,12 +83,25 @@ build_kernel()
 	cd -
 }
 
+build_rootfs()
+{
+	cd $TOP_DIR/rootfs
+	rm rootfs-obj -rf
+	mkdir rootfs-obj
+	cd $TOP_DIR/rootfs/busybox-1.29.0/
+	make defconfig
+	make
+	make install CONFIG_PREFIX=$TOP_DIR/rootfs/rootfs-obj/
+	cd -
+}
+
 start()
 {
 	clone_code
 	cross_complie_config
 	build_uboot
-	bulld_kernel
+	build_kernel
+	build_rootfs
 }
 
 start
