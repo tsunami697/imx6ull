@@ -92,32 +92,34 @@ build_kernel()
 #编译rootfs
 build_rootfs()
 {
+	if [ ! -d "${TOP_DIR}/output/" ]; then
+		mkdir -p $TOP_DIR/output/
+		mkdir -p $TOP_DIR/output/firmware/
+	fi
+
 	cd $TOP_DIR/rootfs
 	rm rootfs-obj -rf
+	cd -
 
 	mkdir rootfs-obj
 	cd $TOP_DIR/rootfs/busybox-1.29.0/
 	make defconfig
 	make -j12
 	make install CONFIG_PREFIX=$TOP_DIR/rootfs/rootfs-obj/
+	cd -
 
 	rm $TOP_DIR/output/rootfs-$VENDOR.tar.bz2
-	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj
-	cd -
+	tar -jcvf $TOP_DIR/output/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
 }
 
 build_package()
 {
 	echo "=========================start building package========================="
-	if [ ! -d "${TOP_DIR}/output/" ]; then
-		mkdir $TOP_DIR/output/
-	else
-		rm $TOP_DIR/output/firmware/* 
-	fi
+	cd $TOP_DIR/output/firmware/ && rm ./* && cd -
 
-	cp $TOP_DIR/uboot/${VENDOR}_uboot/u-boot.imx $TOP_DIR/output/firmware/
-	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb $TOP_DIR/output/firmware/
-	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage $TOP_DIR/output/firmware/
+	cp $TOP_DIR/uboot/${VENDOR}_uboot/u-boot.imx  $TOP_DIR/output/firmware/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/dts/imx6ull-alientek-emmc.dtb  $TOP_DIR/output/firmware/
+	cp $TOP_DIR/kernel/${VENDOR}_kernel/arch/arm/boot/zImage  $TOP_DIR/output/firmware/
 
 	tar -jcvf $TOP_DIR/output/firmware/rootfs-$VENDOR.tar.bz2 $TOP_DIR/rootfs/rootfs-obj/
 
@@ -144,6 +146,7 @@ start()
 	build_rootfs
 
 	build_package
+	./firmware.sh
 	echo "=========================building done========================="
 }
 
