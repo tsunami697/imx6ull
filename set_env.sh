@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # 安装基础依赖
-function install_packege()
+install_packege()
 {
 	sudo apt install vim git git-lfs openssh-server openssh-client terminator open-vm-tools libncurses5-dev make gcc g++
 	git lfs install
