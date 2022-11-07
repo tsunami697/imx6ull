@@ -50,18 +50,18 @@ cross_complie_config()
 # https://atk-imx6ull.coding.net/public
 clone_code()
 {
-	if [ ! -e package ]; then
+	if [ ! -d package ]; then
 		mkdir package
 	fi
 	cd package
 
 	# 下载源代码
-	if [ ! -e 01_Source_Code ]; then
+	if [ ! -d 01_Source_Code ]; then
 		git clone https://e.coding.net/atk-imx6ull/imx6ull/01_Source_Code.git
 	fi
 
 	# 下载工具
-	if [ ! -e 05_Tools ]; then
+	if [ ! -d 05_Tools ]; then
 		git clone https://e.coding.net/atk-imx6ull/imx6ull/05_Tools.git
 	fi
 
@@ -146,7 +146,10 @@ start()
 	build_rootfs
 
 	build_package
-	./firmware.sh
+
+	# . 和source一样，在当前shell中执行
+	# bash sh ./ 是在当前shell另起子shell执行脚本
+	sh ./firmware.sh
 	echo "=========================building done========================="
 }
 
