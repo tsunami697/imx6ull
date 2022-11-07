@@ -9,6 +9,6 @@ led.bin:led.s
 	$(OBJCOPY) -O binary -S -g led.elf led.bin
 	$(OBJDUMP) -D led.elf > led.dis
 clean:
-	rm -rf *.o led.bin led.elf led.dis
+	rm -rf *.o led.bin led.elf led.dis *.imx
 	
 	
