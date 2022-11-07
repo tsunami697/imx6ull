@@ -149,7 +149,7 @@ start()
 
 	# . 和source一样，在当前shell中执行
 	# bash sh ./ 是在当前shell另起子shell执行脚本
-	sh ./firmware.sh
+	sh firmware.sh
 	echo "=========================building done========================="
 }
 
