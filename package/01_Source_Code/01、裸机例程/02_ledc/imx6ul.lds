@@ -5,6 +5,7 @@ SECTIONS{
 	/* 大括号里填上要链接到.text这个段里面的所有文件; *(.text) *是通配符，表示所有输入文件的.text段都放到.text中 */
 	.text :
 	{
+	/* 如果文件在不同目录，加上路径 */
 		start.o
 		main.o
 		*(.text)
