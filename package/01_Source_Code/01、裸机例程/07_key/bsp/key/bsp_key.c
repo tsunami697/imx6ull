@@ -53,6 +53,7 @@ int key_getvalue(void)
 	int ret = 0;
 	static unsigned char release = 1; /* 按键松开 */ 
 
+	/* 延时消抖：在读取到有按键按下后，主动delay(10)后再读取一次，确定按键是否按下 */
 	if((release==1)&&(gpio_pinread(GPIO1, 18) == 0)) 		/* KEY0 	*/
 	{	
 		delay(10);		/* 延时消抖 		*/
