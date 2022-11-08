@@ -9,7 +9,7 @@ Copyright © zuozhongkai Co., Ltd. 1998-2019. All rights reserved.
 日志	   : 初版 2019/1/3 左忠凯修改
 **************************************************************/
 
-.global _start  		/* 全局标号 */
+.global _start  		/* 全局标号,默认是_start */
 
 /*
  * 描述：	_start函数，程序从此函数开始执行，此函数主要功能是设置C
@@ -17,12 +17,12 @@ Copyright © zuozhongkai Co., Ltd. 1998-2019. All rights reserved.
  */
 _start:
 
-	/* 进入SVC模式 */
-	mrs r0, cpsr
-	bic r0, r0, #0x1f 	/* 将r0寄存器中的低5位清零，也就是cpsr的M0~M4 	*/
+	/* 通过设置CPSR寄存器，进入SVC模式 */
+	mrs r0, cpsr		/* 获取cpsr寄存器值，然后操作低5位，不影响其他位的值 */
+	bic r0, r0, #0x1f 	/* 将r0寄存器中的低5位清零，也就是cpsr的M0~M4, 计算公式:Rd = Rn & (~#immed) 	*/
 	orr r0, r0, #0x13 	/* r0或上0x13,表示使用SVC模式					*/
 	msr cpsr, r0		/* 将r0 的数据写入到cpsr_c中 					*/
 
-	ldr sp, =0X80200000	/* 设置栈指针			 */
+	ldr sp, =0X80200000	/* 设置栈指针。DDR已在DCD初始化完毕，否则需要初始化DDR; ixm6ull ddr起始位置是0x80000000,栈是向下生长，所以范围是0x80200000-0x80000000=2M */
 	b main				/* 跳转到main函数 		 */
 
