@@ -32,7 +32,7 @@ _start:
 /* 复位中断 */	
 Reset_Handler:
 
-	cpsid i						/* 关闭全局中断 */
+	cpsid i						/* 关闭全局中断 irq */
 
 	/* 关闭I,DCache和MMU 
 	 * 采取读-改-写的方式。
@@ -63,6 +63,7 @@ Reset_Handler:
 	 * DDR范围:0X80000000~0X9FFFFFFF
 	 */
 	/* 进入IRQ模式 */
+	/* 采取读-改-写的方式。*/
 	mrs r0, cpsr
 	bic r0, r0, #0x1f 	/* 将r0寄存器中的低5位清零，也就是cpsr的M0~M4 	*/
 	orr r0, r0, #0x12 	/* r0或上0x13,表示使用IRQ模式					*/
@@ -70,6 +71,7 @@ Reset_Handler:
 	ldr sp, =0x80600000	/* 设置IRQ模式下的栈首地址为0X80600000,大小为2MB */
 
 	/* 进入SYS模式 */
+	/* 采取读-改-写的方式。*/
 	mrs r0, cpsr
 	bic r0, r0, #0x1f 	/* 将r0寄存器中的低5位清零，也就是cpsr的M0~M4 	*/
 	orr r0, r0, #0x1f 	/* r0或上0x13,表示使用SYS模式					*/
@@ -77,6 +79,7 @@ Reset_Handler:
 	ldr sp, =0x80400000	/* 设置SYS模式下的栈首地址为0X80400000,大小为2MB */
 
 	/* 进入SVC模式 */
+	/* 采取读-改-写的方式。*/
 	mrs r0, cpsr
 	bic r0, r0, #0x1f 	/* 将r0寄存器中的低5位清零，也就是cpsr的M0~M4 	*/
 	orr r0, r0, #0x13 	/* r0或上0x13,表示使用SVC模式					*/

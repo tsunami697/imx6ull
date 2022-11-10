@@ -20,10 +20,7 @@ Copyright © zuozhongkai Co., Ltd. 1998-2019. All rights reserved.
  * @return 				: 无
  */
 void exit_init(void)
-{
-	gpio_pin_config_t key_config;
-
-	/* 1、设置IO复用 */
+{ gpio_pin_config_t key_config; /* 1、设置IO复用 */
 	IOMUXC_SetPinMux(IOMUXC_UART1_CTS_B_GPIO1_IO18,0);			/* 复用为GPIO1_IO18 */
 	IOMUXC_SetPinConfig(IOMUXC_UART1_CTS_B_GPIO1_IO18,0xF080);
 
