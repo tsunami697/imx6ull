@@ -80,7 +80,7 @@ endif
 ifeq ($(KBUILD_VERBOSE),1)	#V=1,判断V的值,V=1就详细输出
   quiet =
   Q =
-else						# 依据命令行是否指定V=1，定义两个变量，下面用
+else						# 依据命令行是否指定V=1，定义两个变量，下面用.默认走这里
   quiet=quiet_
   Q = @
 endif
@@ -99,6 +99,14 @@ endif
 endif	# make通过-x指定参数，V=1方式传递变量
 
 export quiet Q KBUILD_VERBOSE
+#综上：控制编译过程中是否详细输出编译信息
+# 通过make V=1传递到Makefile中进行判断
+# 通过V决定KBUILD_VERBOSE,通过KBUILD_VERBOSE决定 quiet和Q
+# quiet:
+# 	为空，整个命令都会输出
+# 	为quient_，仅输出短版本,直接make走整个，@且不输出执行的命令
+# 	为slient_，整个命令都不输出,静默输出,make -s
+#---------------------------------------------------------------------------------------
 
 # kbuild supports saving output files in a separate directory.
 # To locate output files in a separate directory two syntaxes are supported.
@@ -124,6 +132,8 @@ ifeq ($(KBUILD_SRC),)	#条件成立
 ifeq ("$(origin O)", "command line") #通常不设置,不成立
   KBUILD_OUTPUT := $(O)
 endif
+# KBUILD_OUTPUT 设置编译输出目录
+#----------------------------------------------------------------------------------------
 
 # That's our default target when none is given on the command line
 PHONY := _all
