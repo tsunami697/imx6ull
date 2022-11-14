@@ -138,7 +138,7 @@ build_package()
 
 start()
 {
-	# clone_code
+	clone_code
 	cross_complie_config
 
 	build_uboot
