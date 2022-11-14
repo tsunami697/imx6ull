@@ -3,7 +3,8 @@
 # 安装基础依赖
 install_packege()
 {
-	sudo apt install vim git git-lfs openssh-server openssh-client terminator open-vm-tools libncurses5-dev make gcc g++
+	sudo apt install vim git git-lfs openssh-server openssh-client terminator open-vm-tools libncurses5-dev make gcc g++ manpages-zh
+	alias cman='man -M /usr/share/man/zh_CN'
 	git lfs install
 }
 
