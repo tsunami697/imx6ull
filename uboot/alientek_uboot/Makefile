@@ -136,6 +136,7 @@ endif
 #----------------------------------------------------------------------------------------
 
 # That's our default target when none is given on the command line
+# line: 840
 PHONY := _all
 _all:	#默认目标
 
@@ -166,7 +167,7 @@ endif # ifneq ($(KBUILD_OUTPUT),)
 endif # ifeq ($(KBUILD_SRC),)
 
 # We process the rest of the Makefile if this is the final invocation of make
-ifeq ($(skip-makefile),)
+ifeq ($(skip-makefile),) #取决于输出目录是否设置，默认条件成立
 
 # Do not print "Entering directory ...",
 # but we want to display it when entering to the output directory
@@ -183,6 +184,7 @@ MAKEFLAGS += --no-print-directory
 # See the file "Documentation/sparse.txt" for more details, including
 # where to get the "sparse" utility.
 
+# 本Makefile最后只export了
 ifeq ("$(origin C)", "command line")
   KBUILD_CHECKSRC = $(C)
 endif
@@ -197,6 +199,7 @@ ifdef SUBDIRS	#未定义
   KBUILD_EXTMOD ?= $(SUBDIRS)
 endif
 
+# 一般不设置，所以KBUILD_EXTMOD为空
 ifeq ("$(origin M)", "command line")
   KBUILD_EXTMOD := $(M)
 endif
@@ -210,7 +213,7 @@ else
 _all: modules
 endif
 
-ifeq ($(KBUILD_SRC),)	#条件成立
+ifeq ($(KBUILD_SRC),)	#条件成立,未定义KBUILD_SRC
         # building in the source tree
         srctree := .
 else
@@ -269,7 +272,7 @@ HOSTCXX      = c++
 HOSTCFLAGS   = -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTCXXFLAGS = -O2
 
-ifeq ($(HOSTOS),cygwin)
+ifeq ($(HOSTOS),cygwin) #条件不成立
 HOSTCFLAGS	+= -ansi
 endif
 
@@ -336,7 +339,7 @@ export KBUILD_CHECKSRC KBUILD_SRC KBUILD_EXTMOD
 
 # We need some generic definitions (do not try to remake the file).
 scripts/Kbuild.include: ;
-include scripts/Kbuild.include
+include scripts/Kbuild.include #包含文件
 
 # Make variables (CC, etc...)
 
@@ -376,7 +379,7 @@ UBOOTRELEASE = $(shell cat include/config/uboot.release 2> /dev/null)
 UBOOTVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 
 export VERSION PATCHLEVEL SUBLEVEL UBOOTRELEASE UBOOTVERSION
-export ARCH CPU BOARD VENDOR SOC CPUDIR BOARDDIR	#这些变量从何而来
+export ARCH CPU BOARD VENDOR SOC CPUDIR BOARDDIR	#这些变量来自config.mk
 export CONFIG_SHELL HOSTCC HOSTCFLAGS HOSTLDFLAGS CROSS_COMPILE AS LD CC
 export CPP AR NM LDR STRIP OBJCOPY OBJDUMP
 export MAKE AWK PERL PYTHON
@@ -403,8 +406,10 @@ export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn \
 
 # Basic helpers built in scripts/
 PHONY += scripts_basic
+# build:=make -f ./scripts/Makefile.build obj=scripts/basic
+# scripts_basic目标的作用是编译出scripts/basic/fixdep这个文件
 scripts_basic:
-	$(Q)$(MAKE) $(build)=scripts/basic
+	$(Q)$(MAKE) $(build)=scripts/basic	#build在scripts/Kbuild.include
 	$(Q)rm -f .tmp_quiet_recordmcount
 
 # To avoid any implicit rule to kick in, define an empty command.
@@ -455,6 +460,8 @@ ifeq ($(KBUILD_EXTMOD),)	# 条件成立
         endif
 endif
 # 最终：dot-config=1 config-targets=1 mixed-targets=0
+# -------------------------------------------------------------------------------------------------
+
 ifeq ($(mixed-targets),1)	# 条件不成立
 # ===========================================================================
 # We're called with mixed targets (*config and build targets).
@@ -482,9 +489,28 @@ export KBUILD_DEFCONFIG KBUILD_KCONFIG
 # 没有目标与之匹配，不执行
 config: scripts_basic outputmakefile FORCE
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@	#$@参数集合	make -f：指定特定的makefile
-# 有目标匹配,执行
-%config: scripts_basic outputmakefile FORCE	#只有scripts_baisc有效,scripts_basic编译出scripts/basic/fixdep
+
+# 有目标匹配,执行.make xxx_defconfig会匹配到
+# #只有scripts_baisc有效
+# scripts_basic编译出scripts/basic/fixdep
+# 这里,%是通配符
+# make -f ：指定Makefile文件
+# make -f ./scripts/Makefile.build obj=scripts/kconfig xxx_defconfig
+# 	生成scripts/kconfig/conf
+# 	命令：scripts/kconfig/conf --defconfig=arch/../configs/xxx_defconfig Kconfig
+# 	生成.config
+# 	到这里，.config就生成了，uboot配置就结束了
+%config: scripts_basic outputmakefile FORCE	
 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
+
+# 执行命令：make mx6ull_14x14_ddr512_emmc_defconfig V=1
+# make -f ./scripts/Makefile.build obj=scripts/basic      #build在scripts/Kbuild.include
+# rm -f .tmp_quiet_recordmcount
+#
+# make -f ./scripts/Makefile.build obj=scripts/kconfig mx6ull_14x14_ddr512_emmc_defconfig
+# scripts/kconfig/conf  --defconfig=arch/../configs/mx6ull_14x14_ddr512_emmc_defconfig Kconfig
+#
+# configuration written to .config
 
 else
 # ===========================================================================
@@ -674,9 +700,9 @@ libs-$(CONFIG_HAS_POST) += post/
 libs-y += test/
 libs-y += test/dm/
 libs-$(CONFIG_UT_ENV) += test/env/
+# 综上，libs是uboot下各个子目录的集合
 
 libs-y += $(if $(BOARDDIR),board/$(BOARDDIR)/)
-
 libs-y := $(sort $(libs-y))
 
 u-boot-dirs	:= $(patsubst %/,%,$(filter %/, $(libs-y))) tools examples
@@ -685,6 +711,8 @@ u-boot-alldirs	:= $(sort $(u-boot-dirs) $(patsubst %/,%,$(filter %/, $(libs-))))
 
 libs-y		:= $(patsubst %/, %/built-in.o, $(libs-y))
 
+# head-y在arch/arm/Makefile
+# libs-y是所有子目录下build-in.o的集合
 u-boot-init := $(head-y)
 u-boot-main := $(libs-y)
 
