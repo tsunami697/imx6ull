@@ -700,9 +700,9 @@ libs-$(CONFIG_HAS_POST) += post/
 libs-y += test/
 libs-y += test/dm/
 libs-$(CONFIG_UT_ENV) += test/env/
-# 综上，libs是uboot下各个子目录的集合
 
 libs-y += $(if $(BOARDDIR),board/$(BOARDDIR)/)
+# 综上，libs是uboot下各个子目录的集合
 libs-y := $(sort $(libs-y))
 
 u-boot-dirs	:= $(patsubst %/,%,$(filter %/, $(libs-y))) tools examples
