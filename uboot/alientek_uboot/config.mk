@@ -30,7 +30,7 @@ CPU := arm720t
 endif
 endif
 BOARD := $(CONFIG_SYS_BOARD:"%"=%)
-ifneq ($(CONFIG_SYS_VENDOR),)
+ifneq ($(CONFIG_SYS_VENDOR),)	#条件成立
 VENDOR := $(CONFIG_SYS_VENDOR:"%"=%)
 endif
 ifneq ($(CONFIG_SYS_SOC),)
